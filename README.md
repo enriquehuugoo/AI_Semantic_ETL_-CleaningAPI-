@@ -4,7 +4,10 @@ A robust Semantic ETL service designed to prepare documents for Large Language M
 
 The project consists of two parts:
 1.  **FastAPI Backend**: The core engine that processes documents.
+<img width="1243" height="895" alt="image" src="https://github.com/user-attachments/assets/e56909d9-03d4-4a83-9759-c0788d149cad" />
+
 2.  **Streamlit Frontend (Studio)**: An interactive web interface to easily use the API.
+<img width="1912" height="738" alt="image" src="https://github.com/user-attachments/assets/e13cb0c8-f54f-41ba-8604-76b812393d5d" />
 
 ## Features
 
