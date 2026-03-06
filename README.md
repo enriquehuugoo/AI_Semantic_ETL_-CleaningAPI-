@@ -1,31 +1,39 @@
-# Semantic ETL Service
+# Semantic ETL Service & Studio
 
-A production-grade FastAPI application that serves as a Semantic ETL service for LLMs. It cleans documents (PDF, DOCX, HTML) into Markdown using [Docling](https://github.com/DS4SD/docling) and chunks text for LLM context windows.
+A robust Semantic ETL service designed to prepare documents for Large Language Models (LLMs). It utilizes [Docling](https://github.com/DS4SD/docling) to clean and convert complex documents (PDF, DOCX, HTML) into structured Markdown and provides context-aware chunking optimized for vector embeddings.
+
+The project consists of two parts:
+1.  **FastAPI Backend**: The core engine that processes documents.
+2.  **Streamlit Frontend (Studio)**: An interactive web interface to easily use the API.
 
 ## Features
 
--   **Clean Endpoint**: Converts PDF, DOCX, and HTML to Markdown with metadata and table extraction.
--   **Chunk Endpoint**: Context-aware chunking of Markdown text (max 512 tokens).
--   **Authentication**: API Key protection via `X-API-Key` header.
--   **Rate Limiting**: Throttling to prevent abuse (e.g., 5 requests/minute for heavy ops).
--   **Usage Logging**: Tracks usage per API key for billing/monitoring.
--   **Docker Ready**: Includes Dockerfile for easy deployment.
+-   **Clean Endpoint / UI Tool**: Accurately parses PDF, DOCX, and HTML into clean Markdown. It automatically isolates data tables and calculates token telemetry.
+-   **Chunk Endpoint / UI Tool**: Context-aware chunking of Markdown text that strictly respects header boundaries and enforces a max limit of 512 tokens per chunk.
+-   **No-Noise Architecture**: The API is fully decoupled and standalone, containing no unnecessary billing, authentication, or rate-limiting bloat.
 
 ## Installation
 
-### Local Development
+### Prerequisites
+- Python 3.9+
+
+### Setup
 
 1.  **Clone the repository**:
     ```bash
-    git clone <repository-url>
-    cd AI_cleaningAPI
+    git clone https://github.com/enriquehuugoo/AI_Semantic_ETL_-CleaningAPI-.git
+    cd AI_Semantic_ETL_-CleaningAPI-
     ```
 
-2.  **Create a virtual environment**:
+2.  **Create and activate a virtual environment**:
     ```bash
     python -m venv venv
-    .\venv\Scripts\activate  # Windows
-    # source venv/bin/activate # Linux/Mac
+    
+    # Windows:
+    .\venv\Scripts\activate
+    
+    # Mac/Linux:
+    source venv/bin/activate
     ```
 
 3.  **Install dependencies**:
@@ -33,48 +41,41 @@ A production-grade FastAPI application that serves as a Semantic ETL service for
     pip install -r requirements.txt
     ```
 
-4.  **Configure Environment**:
-    Create a `.env` file in the root directory:
-    ```env
-    VALID_API_KEYS=my-secret-key,another-key
-    ```
-    *Note: If no keys are set, all requests will be rejected.*
+## Running the Application
 
-5.  **Run the server**:
-    ```bash
-    uvicorn app.main:app --reload
-    ```
+### Option 1: The Easy Way (Windows)
+We've included a script that automatically boots up both the FastAPI backend and the Streamlit frontend.
+```powershell
+.\run_local.ps1
+```
+This will open the Semantic ETL Studio in your default web browser at `http://localhost:8501`.
 
-## Usage
+### Option 2: Manual Start
+If you prefer manual control or are on Mac/Linux, run these in two separate terminal windows (ensure your virtual environment is active in both).
 
-### Authentication
-All API requests must include the `X-API-Key` header.
+**Terminal 1 (Backend API):**
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+*The API interactive documentation will be available at http://127.0.0.1:8000/docs*
 
-### Endpoints
+**Terminal 2 (Frontend Studio):**
+```bash
+streamlit run streamlit_app.py
+```
 
-#### `POST /v1/clean`
+## API Usage (Direct)
+
+If you wish to bypass the Streamlit UI and use the API natively in your own applications:
+
+### `POST /v1/clean`
 Upload a file to convert it to Markdown.
--   **Headers**: `X-API-Key: <your-key>`
 -   **Body**: `file` (multipart/form-data)
--   **Limits**: Max file size 10MB. Rate limit: 5/minute.
+-   **Supported Types**: PDF, DOCX, HTML
 
-#### `POST /v1/chunk`
-Split Markdown text into chunks.
--   **Headers**: `X-API-Key: <your-key>`
--   **Body**: JSON `{"markdown": "string"}`
--   **Limits**: Rate limit: 20/minute.
-
-## Deployment with Docker
-
-1.  **Build the image**:
-    ```bash
-    docker build -t ai-cleaning-api .
-    ```
-
-2.  **Run the container**:
-    ```bash
-    docker run -d -p 8000:8000 -e VALID_API_KEYS="production-secret-key" ai-cleaning-api
-    ```
+### `POST /v1/chunk`
+Split Markdown text into semantic chunks.
+-   **Body**: JSON `{"markdown": "your markdown string here"}`
 
 ## License
-[Your License Here]
+MIT License
